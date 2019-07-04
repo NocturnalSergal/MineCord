@@ -7,8 +7,8 @@ const db = require('../main.js');
 const mysql      = require('mysql');
 
 function mine(msg, cmd, client){
-    let pickaxe , authrole , pick , minedres , mined , reply , arraymined;
-    arraymined = [];
+    let pickaxe , authrole , pick , minedres , mined , reply;
+    let stonemined, coalmined, ironmined, goldmined, diamondmined, obsidianmined, redstonemined, emeraldmined = 0;
     mined = Math.round(Math.random() * (10 - 2) + 2);
     authrole = msg.member.roles.last(1);
     db.pool.getConnection(function (err, con){
@@ -22,7 +22,6 @@ function mine(msg, cmd, client){
                 con.release();
                 return;
             }
-            pick = res[0].pick;
             if (res[0].uses <= 0){
                 reply = new RichEmbed()
                     .setAuthor(msg.author.username, msg.author.avatarURL)
@@ -32,83 +31,42 @@ function mine(msg, cmd, client){
                 con.release();
                 return;
             }
-            mined +=
-
+            pick = res[0].pick;
+            stonemined = parseInt(Math.round(config[pick].efficency * mined));
+            coalmined = parseInt((Math.round(config[pick].efficency * mined * .4)));
+            redstonemined = parseInt((Math.round(config[pick].efficency * mined * .34)));
+            minedres = config.Estone + stonemined + " ** Stone **" + "\n" + config.Ecoal + coalmined + " ** Coal **" + "\n" + config.Eredstone + redstonemined + "** Redstone **" + "\n";
+            if (pick === "stonepick" || pick === "ironpick" || pick === "goldpick" || pick === "diamondpick" || pick === "obsidianpick"){
+                ironmined = parseInt((Math.round(config[pick].efficency * mined * .5)));
+                minedres = minedres + config.Eiron + ironmined + "** Iron **" + "\n";
+            }
+            if (pick === "ironpick" || pick === "goldpick" || pick === "diamondpick" || pick === "obsidianpick"){
+                goldmined = parseInt((Math.round(config[pick].efficency * mined * .3)));
+                minedres = minedres + config.Egold + goldmined + "** Gold **" + "\n";
+            }
+            if (pick === "goldpick" || pick === "diamondpick" || pick === "obsidianpick"){
+                diamondmined = parseInt((Math.round(config[pick].efficency * mined * .2)));
+                emeraldmined = parseInt((Math.round(config[pick].efficency * mined * .1)));
+                minedres = minedres + config.Ediamond + diamondmined + "** Diamonds **" + "\n " + config.Eemerald + emeraldmined + "** Emeralds **" + "\n";
+            }
+            if (pick === "diamondpick" || pick === "obsidianpick"){
+                obsidianmined = parseInt((Math.round(config[pick].efficency * mined * .175)));
+                minedres = minedres + config.Eobsidian + obsidianmined + "** Obsidian **" + "\n"
+            }
+            con.query(`update users set stone = stone + ${stonemined}, coal = coal + ${coalmined}, redstone = redstone + ${redstonemined}, iron = iron + ${ironmined}, gold = gold + ${goldmined}, diamond = diamond + ${diamondmined}, emerald = emerald + ${emeraldmined}, obsidian = obsidian + ${obsidianmined}, uses = uses - 1 where id = ${msg.author.id}`);
+            reply = new RichEmbed()
+                .setAuthor(msg.author.username, msg.author.avatarURL)
+                .setColor(authrole[0].hexColor)
+                .addField("**You Mined**", minedres)
+                .addField("**With your**", config[pick].emoji + " " + "**" + config[pick].pickname + "**"); 
+            msg.channel.send(reply);
+            con.release();
+            return;
         });
     });
 }
 
-function oldmine(msg, cmd, client){
-        let Pickaxe;
-        let authrole = msg.member.roles.last(1);
-        db.pool.getConnection(function(err, con){
-        con.query(`SELECT * FROM users WHERE id = ${msg.author.id}` , function (err, res) {
-            if (res[0] == null){
-                msg.reply("fuck off william");
-                return;
-            }
-            // Lets Mine !
-            let pick = res[0].pick;
-            let minedres;
-            let pickname;
-            // Getting Stone mined
-            if (res[0].uses > 0 ){
-            if (pick === "woodpick"){
-                pickname = "Wooden Pickaxe";
-                let mined = Math.round(Math.random() * (10 - 2) + 2);
-                let stonemined = parseInt(Math.round(config[pick] * mined));
-                let coalmined =  parseInt((Math.round(config[pick] * mined * .4)));
-                let stoneup = stonemined +  parseInt(res[0].stone);
-                let coalup = coalmined + parseInt(res[0].coal);
-                con.query(`update users set stone = ${stoneup}, coal = ${coalup}, uses = uses - 1 where id = ${msg.author.id}`);
-                minedres = getEmoji.Estone + stonemined + " **Stone**" + "\n" + getEmoji.Ecoal + coalmined + " **Coal**" + "\n";
-                }
-            if (pick === "stonepick"){
-                pickname = "Stone Pickaxe";
-                let mined = Math.round(Math.random() * (10 - 2) + 2);
-                let stonemined = parseInt(Math.round(config[pick] * mined));
-                let coalmined = parseInt((Math.round(config[pick] * mined * .7)));
-                let ironmined = parseInt((Math.round(config[pick] * mined * .5)));
-                let stoneup = stonemined +  parseInt(res[0].stone);
-                let coalup = coalmined + parseInt(res[0].coal);
-                let ironup = ironmined + parseInt(res[0].iron);
-                con.query(`update users set stone = ${stoneup}, coal = ${coalup}, iron = ${ironup}, uses = uses - 1 where id = ${msg.author.id}`);
-                minedres = getEmoji.Estone + stonemined + " **Stone**" + "\n" + getEmoji.Ecoal + coalmined + " **Coal**" + "\n" + getEmoji.Eiron + ironmined + " **Iron**" + "\n";
-            }
-            if (pick === "ironpick"){
-                pickname = "Iron Pickaxe";
-                let mined = Math.round(Math.random() * (10 - 2) + 2);
-                let stonemined = parseInt(Math.round(config[pick] * mined));
-                let coalmined = parseInt((Math.round(config[pick] * mined * .7)));
-                let ironmined = parseInt((Math.round(config[pick] * mined * .5)));
-                let goldmined = parseInt((Math.round(config[pick] * mined * .3)));
-                let diamondmined = parseInt((Math.round(config[pick] * mined * .2)));
-                let stoneup = stonemined +  parseInt(res[0].stone);
-                let coalup = coalmined + parseInt(res[0].coal);
-                let ironup = ironmined + parseInt(res[0].iron);
-                let goldup = goldmined + parseInt(res[0].gold);
-                let diamondup = diamondmined + parseInt(res[0].diamond);
-                con.query(`update users set stone = ${stoneup}, coal = ${coalup}, iron = ${ironup}, gold = ${goldup}, diamond = ${diamondup}, uses = uses - 1 where id = ${msg.author.id}`);
-                minedres = getEmoji.Estone + stonemined + " **Stone**" + "\n" + getEmoji.Ecoal + coalmined + " **Coal**" + "\n" + getEmoji.Eiron + ironmined + " **Iron**" + "\n" + getEmoji.Egold + goldmined + " **Gold**" + "\n" + getEmoji.Ediamond + diamondmined + " **Diamonds**" + "\n";
-            }
-            }
-            else{
-                 msg.reply("Your Pickaxe is broken.")
-                }
-            // Lets Parse and reply !
-            Pickaxe = guild.Eguild(client).emojis.find(emoji => emoji.name === pick);
-            let reply = new RichEmbed()
-                .setAuthor(msg.author.username, msg.author.avatarURL)
-                .setColor(authrole[0].hexColor)
-                .addField("**You Mined**", minedres)
-                .addField("**With your**", Pickaxe + " " + "**" + pickname + "**"); 
-            msg.channel.send(reply);
-            con.release();
-         });
-        });
-        return;
-    
-}
+
 
 function automine(msg, cmd){
     let pick = "stonepick";
