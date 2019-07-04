@@ -3,7 +3,7 @@ const guild = require('../assets/guild.js');
 const getEmoji = require('../conf/emojis.json');
 const { Client, RichEmbed } = require('discord.js');
 const config = require("../conf/config.json");
-const db = require('../main.js');
+const db = require('../MineCord.js');
 const mysql      = require('mysql');
 const talkedRecently = new Set();
 
