@@ -14,8 +14,8 @@ var pool = mysql.createPool({
     database: config.mysqlDatabase
 });
 // Command Init
-let mineCMD = ["m", "mine", "am", "automine", "s", "shop", "p", "profile", "i", "info", "cmds", "commands", "repair", "r"];
-let mineFUNCS = [mine.mine, mine.mine, mine.automine, mine.automine, shop.shop, shop.shop, profile.profile, profile.profile, profile.info, profile.info, commands.list, commands.list, mine.repair, mine.repair];
+let mineCMD = ["m", "mine", "am", "automine", "s", "shop", "p", "profile", "i", "info", "cmds", "commands", "repair", "r", "start", "s"];
+let mineFUNCS = [mine.mine, mine.mine, mine.automine, mine.automine, shop.shop, shop.shop, profile.profile, profile.profile, profile.info, profile.info, commands.list, commands.list, mine.repair, mine.repair, mine.start, mine.start];
 // Bot Init
 client.on('ready', () => { console.log(`Lets Mine as ${client.user.tag} today!`);
 var Aguild =  function(){guild = client.guilds.get("544749577790554113");console.log(guild);return guild;} });
