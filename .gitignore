@@ -63,3 +63,7 @@ typings/
 # Configuration Files
 
 conf/config.json
+
+# Storage Files
+
+storage/*.json

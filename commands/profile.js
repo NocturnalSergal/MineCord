@@ -1,49 +1,47 @@
 
 const { client, RichEmbed } = require('discord.js');
 const config = require("../conf/config.json");
-const mysql      = require('mysql');
-const con = mysql.createConnection({
-  host     : config.mysqlHost,
-  user     : config.mysqlUser,
-  password : config.mysqlPassword,
-  database : config.mysqlDatabase
-});
+var fs = require('fs');
 
-function profile(msg, cmd, Eguild){
-    let authrole = msg.member.roles.last(1);
-    con.query(`SELECT * FROM users WHERE id = ${msg.author.id}` , function (err, res) {
-       let Pickaxe = Eguild.emojis.find(emoji => emoji.name === res[0].pick);
-       let Estone = Eguild.emojis.find(emoji => emoji.name === "stone");
-       let Ecoal = Eguild.emojis.find(emoji => emoji.name === "coal");
-       let Eiron = Eguild.emojis.find(emoji => emoji.name === "iron");
-       let Egold = Eguild.emojis.find(emoji => emoji.name === "gold");
-       let Eredstone = Eguild.emojis.find(emoji => emoji.name === "redstone");
-       let Ediamond = Eguild.emojis.find(emoji => emoji.name === "diamond");
-       let Eemerald = Eguild.emojis.find(emoji => emoji.name === "emerald");
-       let Durability = res[0].uses;
-       let Level = res[0].level;
-       let XP = res[0].xp;
-       let Money = res[0].balance;
-       let Stone = res[0].stone;
-       let Coal = res[0].coal;
-       let Iron = res[0].iron;
-       let Gold = res[0].gold;
-       let Redstone = res[0].redstone;
-       let Diamonds = res[0].diamond;
-       let Emeralds = res[0].emerald;
-       let maxuses = res[0].maxuses;
-       let reply = new RichEmbed()
-            .setAuthor(msg.author.username, msg.author.avatarURL)
-            .setColor(authrole[0].hexColor)
-            .addField("**Information**","**Pickaxe:**" + Pickaxe + "\n" + "**Durability:** " + Durability + " / " + maxuses + "\n" + "**Level:** " + Level + "\n" + "**Money:** $" + Money + "\n" + "**XP:** " + XP + " / ", true)
-            .addField("**Inventory**", "**Stone:** " + Stone + Estone + "\n" + "**Coal**: " + Coal + Ecoal + "\n" + "**Iron:** " + Iron + Eiron + "\n" + "**Gold:** " + Gold + Egold + "\n" + "**Redstone:** " + Redstone + Eredstone + "\n" + "**Diamonds:** " + Diamonds + Ediamond + "\n" + "**Emeralds:** " + Emeralds + Eemerald ,true);
+function profile(msg, color){
+  fs.exists(`storage/${msg.author.id}.json`, function(exists){
+    if (exists == true) {
+      fs.readFile(`storage/${msg.author.id}.json`, function(err, fx){
+        arrayUser = JSON.parse(fx.toString('utf8'));
+        let pick = arrayUser.pick;
+        let Durability = arrayUser.uses;
+        let Level = arrayUser.level;
+        let XP = arrayUser.xp;
+        let XPlevelup = arrayUser.xplevelup;
+        let Money = arrayUser.balance;
+        let Stone = arrayUser.stone;
+        let Coal = arrayUser.coal;
+        let Iron = arrayUser.iron;
+        let Gold = arrayUser.gold;
+        let Redstone = arrayUser.redstone;
+        let Diamonds = arrayUser.diamond;
+        let Emeralds = arrayUser.emerald;
+        let Obsidian = arrayUser.obsidian;
+        let maxuses = config[arrayUser.pick].maxuses;
+        let reply = new RichEmbed()
+          .setAuthor(msg.author.username, msg.author.avatarURL)
+          .setColor(color)
+          .addField("**Information**","**Pickaxe:**" + config[pick].emoji + "\n" + "**Durability:** " + Durability + " / " + maxuses + "\n" + "**Level:** " + Level + "\n" + "**Money:** $" + Money + "\n" + "**XP:** " + XP + " / " + XPlevelup,  true)
+          .addField("**Inventory**", "**Stone:** " + Stone + config.Estone + "\n" + "**Coal**: " + Coal + config.Ecoal + "\n" + "**Iron:** " + Iron + config.Eiron + "\n" + "**Gold:** " + Gold + config.Egold + "\n" + "**Redstone:** " + Redstone + config.Eredstone + "\n" + "**Diamonds:** " + Diamonds + config.Ediamond + "\n" + "**Emeralds:** " + Emeralds + config.Eemerald + "\n" + "**Obsidian:**" + Obsidian + config.Eobsidian ,true);
         msg.channel.send(reply);
         return;
-
-    });
-
+        });
+      }
+    if(exists == false) {
+      reply = new RichEmbed()
+          .setAuthor(msg.author.username, msg.author.avatarURL)
+          .setColor(color)
+          .addField("Error" , "**You Don't have a profile yet do `m!start` to create your profile.**");
+      msg.channel.send(reply);
+      return;
+    }
+  });
 }
-
 function info(msg, cmd){
 
 }

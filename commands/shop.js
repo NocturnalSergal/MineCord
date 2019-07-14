@@ -9,6 +9,7 @@ const con = mysql.createConnection({
 });
 
 function shop(msg, cmd){
+  
     return;
 }
 

@@ -5,14 +5,6 @@ const mine = require("./commands/mine.js");
 const shop = require("./commands/shop.js");
 const profile = require("./commands/profile.js");
 const commands = require("./commands/commands.js");
-const mysql      = require('mysql');
-// Initalising the MySQL Pool 
-var pool = mysql.createPool({
-    host: config.mysqlHost,
-    user: config.mysqlUser,
-    password: config.mysqlPassword,
-    database: config.mysqlDatabase
-});
 // Command Init
 let mineCMD = ["m", "mine", "am", "automine", "s", "shop", "p", "profile", "i", "info", "cmds", "commands", "repair", "r", "start", "s"];
 let mineFUNCS = [mine.mine, mine.mine, mine.automine, mine.automine, shop.shop, shop.shop, profile.profile, profile.profile, profile.info, profile.info, commands.list, commands.list, mine.repair, mine.repair, mine.start, mine.start];
@@ -23,11 +15,12 @@ var Aguild =  function(){guild = client.guilds.get("544749577790554113");console
 client.on('message', msg => {
         if (msg.channel.id == config.botchannel){ // checking the command was sent in the right channel
             let cmd = msg.content.split("!"); // splitting message into a array for processing //
+            let authrole = msg.member.roles.last(1);
+            let color = authrole[0].hexColor;
             cmd.shift()
                 for (let i = 0; i < mineCMD.length; i++) { // command selector
                     if (cmd[0] === mineCMD[i]) {
-                      mineFUNCS[i](msg, cmd, client);}}}
+                      mineFUNCS[i](msg, color, client, cmd);}}}
         return;
 });
-exports.pool = pool;
 client.login(config.token);
